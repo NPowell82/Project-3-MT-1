@@ -1,0 +1,65 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--
+    Course: CIS133DA
+    Section: 99999
+    Lesson: 3
+    -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIC2456068 - Template</title>
+</head>
+<body>
+    <h1>Basic Template</h1>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    
+    <h2>Michael Touhey</h2>
+    <p>I am Michael Touhey, a creative person with a zeal of great interest in graphic design. I was originally born in Connecticut but had moved to Arizona when I was still young, whereafter I have since continued to grow up in the majestic, colorful Southwest and have become engulfed in its diversified culture. The remarkable countryside has immensely shaped my artist viewpoint as I have been inspired to be able to create such strong, motion filled and at the same time, have a piece of our regional comfort through my artistic pieces</p>
+    <p>At present, I study at an associate degree program in graphic design, which has given me an opportunity to sharpen my talents and try out some creative endeavors. The tools that I am well acquainted with and the industry-standard tools that I work with to come up with aesthetically appealing designs are Adobe Photoshop, Adobe Illustrator, and InDesign that help in conveying the right ideas to design. It can be creating streamlined branding materials, attention-grabbing posters, or detailed online illustrations; I live to bring ideas to life in the form of catchy visuals that reflect the requirements of the audience.</p>
+    <p>In addition to technical skills, I provide the spirit of creativity, attention to details, and teamwork to all projects. I am always trying out of new methods of doing a design, continuing to keep up to date with the latest trends in design, and trying to gain feedback so that I improve my work. I intend to develop designs that will not only fulfil the desires of my clients but would also be memorable. I look forward to my further education and work as a designer, so I can not wait to develop, do difficult but interesting work, and develop the world in which visual storytelling is being improved all the time.</p>
+    
+    <p>Phone: (555) 123-4567<br>Email: mic2456068@gmail.com</p>
+    
+    <p>Copyright 2025 by Michael Touhey</p>
+</body>
+</html>
